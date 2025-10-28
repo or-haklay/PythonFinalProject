@@ -48,12 +48,13 @@ class UserSerializer(ModelSerializer):
 class CommentSerializer(ModelSerializer):
     # take the author from the jwt:
     author = HiddenField(default = CurrentProfileDefault())
+    article = HiddenField(default=None)  # This will be set by the view
 
     # add the author_id to the json:
     author_id = SerializerMethodField('get_author_id')
     class Meta:
         model = Comment
-        fields = "__all__"
+        fields = ['id', 'text', 'author', 'article', 'created_at', 'updated_at', 'author_id']
     
     # a helper method that returns the id of the author:
     def get_author_id(self, obj):

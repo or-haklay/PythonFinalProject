@@ -18,7 +18,8 @@ def get_token_for_user(user):
     token = BlogTokenObtainPairSerializer.get_token(user)
     
     return {
-        'jwt': str(token.access_token),
+        'access': str(token.access_token),
+        'refresh': str(token),
     }
 
 
@@ -30,7 +31,10 @@ class CurrentUserDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
-        return serializer_field.context['request'].user
+        request = serializer_field.context.get('request')
+        if request and request.user.is_authenticated:
+            return request.user
+        return None
 
 
 class CurrentProfileDefault:
@@ -41,4 +45,7 @@ class CurrentProfileDefault:
     requires_context = True
 
     def __call__(self, serializer_field):
-        return serializer_field.context['request'].user.userprofile
+        request = serializer_field.context.get('request')
+        if request and request.user.is_authenticated:
+            return request.user.userprofile
+        return None
